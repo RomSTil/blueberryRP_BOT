@@ -57,4 +57,4 @@ async def penalty(ctx, игрок: disnake.Member, сумма_выплаты: in
                 await игрок.add_roles(role)
 
 
-bot.run("MTE3MTc2NjMwMDM4OTk0MTI5MQ.G8GOiz.Q8tVAZxwYp6o0H-eJ8u4Fk3Nl0jew1Hc1kztlM")
+bot.run("соси бибу")
