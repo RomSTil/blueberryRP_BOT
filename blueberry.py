@@ -73,4 +73,4 @@ async def penalty(ctx, игрок: disnake.Member, сумма_выплаты: in
 
 
 
-bot.run("MTE3MTc2NjMwMDM4OTk0MTI5MQ.GBL-Xa.e7yeek99G3xUag4HW6pCRYCR680y3Wlj_uY8Oc")
+bot.run("token")
