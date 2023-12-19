@@ -66,25 +66,10 @@ async def buttons(inter: disnake.ApplicationCommandInteraction):
         ],
     )
 
-
-@bot.listen("on_button_click")
-async def help_listener(inter: disnake.MessageInteraction):
-    if inter.component.custom_id not in ["yes", "no"]:
-        # We filter out any other button presses except
-        # the components we wish to process.
-        return
-
-    if inter.component.custom_id == "yes":
-        await inter.response.send_modal(modal=MyModal())
-        channel = disnake.utils.get(bot.get_all_channels(), name='channel_name')
-        # Отправляем сообщение в канал
-        await inter.response.send_message(channel, 'Hello, this is a message from my bot!')
-
 @bot.slash_command(description="добавляет игрока в белый список")
 # @commands.has_any_role(role)
 @commands.has_guild_permissions(administrator=True)
 async def easywl(ctx, member: disnake.Member, nik: str):
-
     await member.edit(nick=nik)
     channel = bot.get_channel(1171085821059813457)
     await channel.send(f"easywl add {nik}")
@@ -95,41 +80,68 @@ async def easywl(ctx, member: disnake.Member, nik: str):
     channel = bot.get_channel(1171503861685571634)
     await channel.send(
         embed=disnake.Embed(
-            title="ㅤㅤㅤㅤㅤㅤУведомление",
-            description=f"ㅤㅤㅤㅤㅤ\nПользователю {member.mention} одобрили заявку\nㅤㅤㅤㅤㅤㅤ",
+            title="Уведомление",
+            description=f"Пользователю {member.mention} одобрили заявку",
             colour=0x4F86F7,
         )
     )
     await ctx.send("Команда сработала")
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
-#                                                                                                       #Выдача штрафов#                                                                                             #
+#                                                                                                       #Выдача штрафов#                                                                                              #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 @bot.slash_command(description="выдача штрафа")
 @commands.has_guild_permissions(administrator=True)
-async def penalty(ctx, игрок: disnake.Member, сумма_выплаты: int, причина: str, role: disnake.Role, пострадавший: disnake.Member, punishment: int):
+async def penalty(ctx, игрок: disnake.Member, сумма_выплаты: int, причина: str, role: disnake.Role, пострадавший: disnake.Member, наказание: int):
     time_theft = 86400
-    if punishment == 1:
-
+    if наказание == 1:
+        await ctx.send(f"{игрок.mention}")
         await ctx.send(
-            f"{игрок.mention} получает штраф в размера {сумма_выплаты} алмаза по причина: {причина}. верните вещи игроку {пострадавший.mention}У вас есть 5 дней для выплаты налога")
+        embed=disnake.Embed(
+            title="Уведомление",
+            description=f"{игрок.mention} получает штраф в размера {сумма_выплаты} алмаза по причина: {причина}. верните вещи игроку {пострадавший.mention}У вас есть 5 дней для выплаты налога",
+            colour=0x4F86F7,
+            )
+        )
         for i in range(5, -1, -1):
-            @bot.slash_command(description="")
-            async def returned_the_debt(ctx, игрок: disnake.Member, пострадавший: disnake.Member):
-                await ctx.send(f"игрок {игрок.mention} вернул штраф игроку {пострадавший.mention}")
-                a = 1
-                if a == 1:
-                    return
-
             print(f"до выплаты штрафа осталось {i} дней")
             await asyncio.sleep(time_theft)
-            await ctx.send(f"Напоминание игроку {игрок.mention}.до выплаты штрафа осталось {i} дней")
+            await ctx.send({игрок.mention})
+            await ctx.send(
+            embed=disnake.Embed(
+                title="Уведомление",
+                description=f"Напоминание игроку {игрок.mention}.до выплаты штрафа осталось {i} дней",
+                colour=0x4F86F7,
+                )
+            )
         if i == 0:
             await ctx.send(f"ваше время вышло {игрок.mention} вы получаете {role.mention}!")
             await игрок.add_roles(role)
-    elif punishment == 2:
+    elif наказание == 2:
+        await ctx.send(f"{игрок.mention}")
         await ctx.send(
-            f"{игрок.mention} получает {role.mention}. Причина: {причина}.Играйте в свое удовольствие и больше не нарушайте правила!")
+            embed=disnake.Embed(
+                title="Уведомление",
+                description=f"{игрок.mention} получает {role.mention}. Причина: {причина}.Играйте в свое удовольствие и больше не нарушайте правила!",
+                colour=0x4F86F7,
+                )
+            )
         await игрок.add_roles(role)
-
-
-bot.run("Token")
+        
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+#                                                                                                       #Организации#                                                                                                 #
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+@bot.slash_command(description="Сделать игрока частью клана")
+@commands.has_role(1186343882724745287)
+async def give_player_in_organisation(ctx, игрок: disnake.Member, role_organisation: disnake.guild.Role):
+    
+    await ctx.send(f"{игрок.mention}")
+    await ctx.send(
+        embed=disnake.Embed(
+            title="Уведомление",
+            description=f"Глава клана {role_organisation} добавили игрока {игрок}",
+            colour=0x4F86F7,
+            )
+        )
+    await игрок.add_roles(role_organisation)
+    
+bot.run("token")
