@@ -37,24 +37,28 @@ class MyModal(disnake.ui.Modal):
                 style=TextInputStyle.short,
             ),
         ]
-        super().__init__(title="У вас вылезет ошибка но это визуальны баг^^", components=components)
+        super().__init__(title="У вас вылезет ошибка. Это визуальный баг", components=components)
 
     # The callback received when the user input is completed.
-    async def callback(self, ctx: disnake.ModalInteraction):
-        embed = disnake.Embed(title="Заявка")
-        channel = bot.get_channel(1171058457839931442)
-        for key, value in ctx.text_values.items():
+    async def callback(self, inter: disnake.ModalInteraction):
+        embed = disnake.Embed(title="Заявка!")
+        for key, value in inter.text_values.items():
             embed.add_field(
                 name=key.capitalize(),
                 value=value[:1024],
                 inline=False,
             )
+        channel = bot.get_channel(1171058457839931442)
         await channel.send(embed=embed)
+
+
+bot = commands.Bot(command_prefix="!")
 
 # The slash command that responds with a message.
 @bot.slash_command()
 async def buttons(inter: disnake.ApplicationCommandInteraction):
-    channel = bot.get_channel(1181617569707339838)
+    channel = bot.get_channel(1171058457839931442)
+    
     await channel.send(
         embed = disnake.Embed(
         title="Добро пожаловать на blueberryRP",
@@ -62,10 +66,25 @@ async def buttons(inter: disnake.ApplicationCommandInteraction):
         colour=0x4F86F7,
         ),
         components=[
-            disnake.ui.Button(label="Подать заявку", style=disnake.ButtonStyle.success, custom_id="yes"),
+            disnake.ui.Button(label="Подать заявку", style=disnake.ButtonStyle.success, custom_id="yes")
         ],
     )
+    await inter.response.send_message("Команда сработала")
 
+
+@bot.listen("on_button_click")
+async def help_listener(inter: disnake.MessageInteraction):
+    if inter.component.custom_id not in ["yes"]:
+        return
+
+    if inter.component.custom_id == "yes":
+        await inter.response.send_modal(modal=MyModal())
+
+
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+#                                                                                                       #Добавление в белый список#                                                                                              #
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 @bot.slash_command(description="добавляет игрока в белый список")
 # @commands.has_any_role(role)
 @commands.has_guild_permissions(administrator=True)
@@ -77,15 +96,17 @@ async def easywl(ctx, member: disnake.Member, nik: str):
     guild = bot.get_guild(1170489938597380146)
     role = guild.get_role(1170761992445886626)
     await member.add_roles(role)
-    channel = bot.get_channel(1171503861685571634)
-    await channel.send(
-        embed=disnake.Embed(
-            title="Уведомление",
-            description=f"Пользователю {member.mention} одобрили заявку",
-            colour=0x4F86F7,
-        )
+    channel = bot.get_channel(1187060598761078794)
+    embed = disnake.Embed(
+    description="Одобрили заявку",
+    colour=0x4F86F7,
     )
-    await ctx.send("Команда сработала")
+    embed.set_author(
+    name=f"игроку {member}",
+    )
+    await channel.send(member.mention)
+    await channel.send(embed=embed)
+    
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 #                                                                                                       #Выдача штрафов#                                                                                              #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
@@ -133,15 +154,26 @@ async def penalty(ctx, игрок: disnake.Member, сумма_выплаты: in
 @bot.slash_command(description="Сделать игрока частью клана")
 @commands.has_role(1186343882724745287)
 async def give_player_in_organisation(ctx, игрок: disnake.Member, role_organisation: disnake.guild.Role):
-    
-    await ctx.send(f"{игрок.mention}")
-    await ctx.send(
+    channel = bot.get_channel(1171503861685571634)
+    await ctx.send("команда выполненна")
+    await channel.send(f"{игрок.mention}")
+    await channel.send(
         embed=disnake.Embed(
             title="Уведомление",
             description=f"Глава клана {role_organisation} добавили игрока {игрок}",
             colour=0x4F86F7,
             )
         )
+    guild = bot.get_guild(1170489938597380146)
+    role = guild.get_role(1187092563249856522)
     await игрок.add_roles(role_organisation)
-    
+    await игрок.add_roles(role)
+
+
+# @bot.slash_command(description="Выдает роль главы клана")
+# async def lieve_organisation(ctx, inter ):
+#     role = ctx.guild.get_role()
+#     if role
+#     await inter.author.remove_roles(disk)
+
 bot.run("token")
