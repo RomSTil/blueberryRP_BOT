@@ -12,6 +12,10 @@ async def on_ready():
     await channel.send("бот работает!")
     print("все работает!")
 
+
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+#                                                                                                       #Регистрация#                                                                                              #
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 # Subclassing the modal.
 class MyModal(disnake.ui.Modal):
     def __init__(self):
@@ -31,9 +35,9 @@ class MyModal(disnake.ui.Modal):
                 style=TextInputStyle.short,
             ),
             disnake.ui.TextInput(
-                label="версия игры. Джава Бедрок",
-                placeholder="джава бедрок",
-                custom_id="версия игры",
+                label="откуда пришли",
+                placeholder="тг,вк,тикток, ютуб шортс",
+                custom_id="откуда пришли",
                 style=TextInputStyle.short,
             ),
         ]
@@ -58,7 +62,6 @@ bot = commands.Bot(command_prefix="!")
 @bot.slash_command()
 async def buttons(inter: disnake.ApplicationCommandInteraction):
     channel = bot.get_channel(1171058457839931442)
-    
     await channel.send(
         embed = disnake.Embed(
         title="Добро пожаловать на blueberryRP",
@@ -170,10 +173,39 @@ async def give_player_in_organisation(ctx, игрок: disnake.Member, role_orga
     await игрок.add_roles(role)
 
 
-# @bot.slash_command(description="Выдает роль главы клана")
-# async def lieve_organisation(ctx, inter ):
-#     role = ctx.guild.get_role()
-#     if role
-#     await inter.author.remove_roles(disk)
+@bot.slash_command(description="выйти из клана")
+@commands.has_role(1187092563249856522)
+async def lieve_organisation(ctx, клан: disnake.guild.Role):
+    channel = bot.get_channel(1171503861685571634)
+    await channel.send(
+    embed=disnake.Embed(
+        title="Уведомление",
+        description=f"  вы вышли из клана {клан}",
+        colour=0x4F86F7,
+        )
+    )
+    await ctx.author.remove_roles(клан)
+    role_to_remove = disnake.utils.get(ctx.guild.roles, name="клановый игрок")
+    await ctx.author.remove_roles(role_to_remove)
 
+@bot.slash_command(description="Кикнуть игркоа из клана")
+@commands.has_any_role(1186343882724745287)
+async def kick_out_organization(ctx, игрок: disnake.Member, клан: disnake.guild.Role):
+    channel = bot.get_channel(1171503861685571634)
+    await ctx.send("команда выполненна")
+    await channel.send(f"{игрок.mention}")
+    await channel.send(
+        embed=disnake.Embed(
+            title="Уведомление",
+            description=f"Глава клана {клан} удаляет игрока {игрок}",
+            colour=0x4F86F7,
+            )
+        )
+    await ctx.author.remove_roles(клан)
+    role_to_remove = disnake.utils.get(ctx.guild.roles, name="клановый игрок")
+    await ctx.author.remove_roles(role_to_remove)
+
+@bot.slash_command(description="Список игроков в клане")
+async def list_players(ctx):
+    pass
 bot.run("token")
